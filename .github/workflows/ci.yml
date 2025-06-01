@@ -93,6 +93,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Debug working directory
+        run: |
+          pwd
+          ls -la
+          ls -la index.html || echo "index.html not found"
+          cat vite.config.ts
+        
       - name: Build application
         run: npm run build
         

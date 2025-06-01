@@ -12,7 +12,7 @@ export const createDeterministicStockData = (symbol: string, period: string) => 
   const basePrice = 150 // 固定ベース価格
   const dates = generateTradingDates(period)
   
-  return dates.map((date, index) => {
+  return dates.map((date, _index) => {
     const variance = (seededRandom() - 0.5) * 10 // ±5の変動
     return {
       date,

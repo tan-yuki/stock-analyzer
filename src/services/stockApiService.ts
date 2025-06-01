@@ -109,7 +109,14 @@ class StockApiService {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const data: any = await response.json();
+    const data: {
+      'Error Message'?: string;
+      'Note'?: string;
+      'Time Series (Daily)'?: Record<string, {
+        '4. close': string;
+        [key: string]: string;
+      }>;
+    } = await response.json();
     
     // Check for API error messages
     if (data['Error Message']) {
@@ -129,7 +136,7 @@ class StockApiService {
     
     Object.entries(timeSeries)
       .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-      .forEach(([dateString, priceInfo]: [string, any]) => {
+      .forEach(([dateString, priceInfo]: [string, { '4. close': string; [key: string]: string }]) => {
         const closePrice = parseFloat(priceInfo['4. close']);
         if (!isNaN(closePrice)) {
           prices.push({

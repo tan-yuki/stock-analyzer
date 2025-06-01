@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi, expect } from 'vitest'
 
 // 順序を保証する非同期テストヘルパー
 export const sequentialAsync = async <T>(
@@ -15,7 +15,7 @@ export const sequentialAsync = async <T>(
 }
 
 // モック呼び出し順序の検証ヘルパー
-export const verifyCallOrder = (mockFn: any, expectedCalls: any[]) => {
+export const verifyCallOrder = (mockFn: ReturnType<typeof vi.fn>, expectedCalls: unknown[][]) => {
   const actualCalls = mockFn.mock.calls
   
   expect(actualCalls).toHaveLength(expectedCalls.length)

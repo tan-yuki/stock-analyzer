@@ -51,8 +51,8 @@ export const StockChart: React.FC<StockChartProps> = ({ data }) => {
       y: {
         beginAtZero: false,
         ticks: {
-          callback: function(value: any) {
-            return '$' + value.toFixed(2);
+          callback: function(value: string | number) {
+            return '$' + Number(value).toFixed(2);
           }
         }
       },
@@ -68,7 +68,7 @@ export const StockChart: React.FC<StockChartProps> = ({ data }) => {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: { parsed: { y: number } }) {
             return '株価: $' + context.parsed.y.toFixed(2);
           }
         }

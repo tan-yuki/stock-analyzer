@@ -7,7 +7,7 @@ vi.mock('chart.js', () => {
     destroy: vi.fn(),
     update: vi.fn(),
     render: vi.fn(),
-  }))
+  })) as ReturnType<typeof vi.fn> & { register: ReturnType<typeof vi.fn> }
   
   mockChart.register = vi.fn()
   
@@ -62,21 +62,20 @@ Object.defineProperty(import.meta, 'env', {
 const FIXED_DATE = new Date('2025-06-01T00:00:00Z')
 
 // Date.nowのモック
-const originalDateNow = Date.now
 Date.now = vi.fn(() => FIXED_DATE.getTime())
 
 // new Date()のモック（引数なしの場合のみ）
 const originalDate = global.Date
 global.Date = class extends originalDate {
-  constructor(...args: any[]) {
+  constructor(...args: unknown[]) {
     if (args.length === 0) {
       super(FIXED_DATE.getTime())
     } else {
-      super(...args)
+      super(...(args as ConstructorParameters<typeof Date>))
     }
   }
   
   static now() {
     return FIXED_DATE.getTime()
   }
-} as any
+} as typeof Date

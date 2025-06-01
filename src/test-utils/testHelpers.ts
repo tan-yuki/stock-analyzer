@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react'
 
 // MSWの応答を意図的に遅延させるヘルパー
 export const createDelayedMSWHandler = (delay: number = 100) => {
-  return async (req: any, res: any, ctx: any) => {
+  return async () => {
     await new Promise(resolve => setTimeout(resolve, delay))
     // 元のハンドラーロジック
   }
@@ -73,7 +73,7 @@ export const getAllElementsSafely = (
 
 // アラート呼び出しの確実な検証
 export const verifyAlertCalled = async (
-  mockAlert: any,
+  mockAlert: ReturnType<typeof vi.fn>,
   expectedMessage: string,
   timeout: number = 3000
 ) => {

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { mockAlphaVantageResponse, mockCompanyOverview } from './mockData'
+import { mockCompanyOverview } from './mockData'
 import { createDeterministicStockData } from './deterministicMockData'
 
 const ALPHA_VANTAGE_BASE_URL = 'https://www.alphavantage.co/query'
@@ -8,7 +8,13 @@ const ALPHA_VANTAGE_BASE_URL = 'https://www.alphavantage.co/query'
 // 確定的なデータ生成ヘルパー（Flakyテスト防止）
 const generateDeterministicTimeSeriesData = (period: string, symbol: string = 'AAPL') => {
   const deterministicData = createDeterministicStockData(symbol, period)
-  const timeSeries: Record<string, any> = {}
+  const timeSeries: Record<string, {
+    '1. open': string;
+    '2. high': string;
+    '3. low': string;
+    '4. close': string;
+    '5. volume': string;
+  }> = {}
   
   deterministicData.forEach(price => {
     const dateStr = price.date.toISOString().split('T')[0]

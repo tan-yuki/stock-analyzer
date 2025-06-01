@@ -4,7 +4,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
   ],
-  ignorePatterns: ['dist', '.eslintrc.js', 'node_modules', '**/*.test.tsx', '**/*.test.ts'],
+  ignorePatterns: ['dist', '.eslintrc.js', 'node_modules', '**/*.test.tsx', '**/*.test.ts', 'src/test-utils/**/*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',

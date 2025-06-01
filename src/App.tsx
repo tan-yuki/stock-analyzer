@@ -4,7 +4,7 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 import { StockInfo } from './components/StockInfo';
 import { StockChart } from './components/StockChart';
 import { AnalysisResults } from './components/AnalysisResults';
-import { generateMockStockData } from './utils/stockDataGenerator';
+import { stockApiService } from './services/stockApiService';
 import { calculateStockAnalysis } from './utils/stockAnalysis';
 import { StockData, StockAnalysis, StockFormData } from './types';
 import './style.css';
@@ -23,17 +23,14 @@ const App: React.FC = () => {
     setLoading(true);
     
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const data = generateMockStockData(formData.symbol, formData.period);
+      const data = await stockApiService.fetchStockData(formData.symbol, formData.period);
       const analysisResult = calculateStockAnalysis(data.prices);
       
       setStockData(data);
       setAnalysis(analysisResult);
     } catch (error) {
       console.error('Error:', error);
-      alert('データの取得に失敗しました。銘柄コードを確認してください。');
+      alert('データの取得に失敗しました。銘柄コードを確認するか、しばらく後にもう一度お試しください。');
     } finally {
       setLoading(false);
     }

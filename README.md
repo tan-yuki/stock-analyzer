@@ -4,10 +4,12 @@ React + TypeScript で構築された日本語の株価分析ツールです。�
 
 ## ✨ 機能
 
+- **リアルタイム株価取得**: Alpha Vantage API から実際の株価データを取得
 - **銘柄検索**: 主要な米国株（AAPL、GOOGL、TSLA等）の分析
 - **期間選択**: 1ヶ月〜2年の期間を選択可能
 - **インタラクティブチャート**: Chart.js による滑らかな価格推移表示
 - **統計分析**: 最高値・最安値・平均値・ボラティリティ・期間収益率を自動計算
+- **自動フォールバック**: API制限時はモックデータで継続利用可能
 - **レスポンシブデザイン**: モバイル・デスクトップ両対応
 
 ## 🛠️ 技術スタック
@@ -35,11 +37,25 @@ cd stock-analyzer
 # 依存関係をインストール
 npm install
 
+# 環境変数を設定（オプション）
+cp .env.example .env
+# .env ファイルを編集してAPIキーを設定
+
 # 開発サーバーを起動
 npm run dev
 ```
 
 ブラウザで `http://localhost:3000` を開いてアプリケーションにアクセスできます。
+
+### API設定（オプション）
+
+実際の株価データを取得するために、Alpha Vantage の無料APIキーを取得できます：
+
+1. [Alpha Vantage](https://www.alphavantage.co/support/#api-key) で無料APIキーを取得
+2. `.env.example` を `.env` にコピー
+3. `.env` ファイルで `VITE_ALPHA_VANTAGE_API_KEY` を設定
+
+APIキーが設定されていない場合は、デモデータで動作します。
 
 ## 📋 利用可能なコマンド
 
@@ -72,7 +88,7 @@ npm run lint
 - **NVDA** - NVIDIA Corporation
 - **META** - Meta Platforms Inc.
 
-※ デモ用のモックデータを使用しています。実際の株価データではありません。
+※ APIキーが設定されている場合は実際の株価データを取得し、未設定の場合はデモ用データを使用します。
 
 ## 📱 使用方法
 
@@ -91,10 +107,12 @@ src/
 │   ├── StockInfo.tsx       # 銘柄情報表示
 │   ├── StockChart.tsx      # チャート表示
 │   └── AnalysisResults.tsx # 分析結果表示
+├── services/            # API関連サービス
+│   └── stockApiService.ts  # Alpha Vantage API呼び出し
 ├── types/               # TypeScript型定義
 │   └── index.ts
 ├── utils/               # ユーティリティ関数
-│   ├── stockDataGenerator.ts  # モックデータ生成
+│   ├── stockDataGenerator.ts  # モックデータ生成（フォールバック用）
 │   └── stockAnalysis.ts       # 統計計算
 ├── App.tsx             # メインアプリケーション
 ├── main.tsx           # エントリーポイント
@@ -112,13 +130,18 @@ src/
 - **ボラティリティ**: 年率換算した価格変動率（252営業日基準）
 - **期間収益率**: 期間開始から終了までの総リターン
 
-### データ生成
+### データ取得
 
-デモ用に以下の方法でリアルなモックデータを生成：
+**実際のAPIデータ（推奨）:**
+- Alpha Vantage API から実際の株価データを取得
+- 会社名、日次終値データを含む詳細情報
+- レート制限: 無料プランでは1分間に5回、1日500回のリクエスト
 
+**フォールバックデータ:**
+- API制限やエラー時は自動的にモックデータに切り替え
 - 土日を除く営業日のみ生成
 - 日次変動率 ±5% 以内のランダムな価格変動
-- 各銘柄の realistic な基準価格を設定
+- 各銘柄のリアルな基準価格を設定
 
 ## 🤝 コントリビューション
 

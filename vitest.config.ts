@@ -25,4 +25,7 @@ export default defineConfig({
   define: {
     'import.meta.vitest': undefined,
   },
+  // ビルド用の設定はvite.config.tsから分離
+  root: '.',
+  publicDir: 'public',
 })

@@ -28,6 +28,14 @@ interface StockChartProps {
   data: StockData;
 }
 
+const styles = {
+  chartContainer: {
+    margin: '24px 0',
+    height: '350px',
+    position: 'relative' as const,
+  },
+};
+
 export const StockChart: React.FC<StockChartProps> = ({ data }) => {
   const chartData = {
     labels: data.prices.map(p => p.date.toLocaleDateString('ja-JP')),
@@ -77,7 +85,7 @@ export const StockChart: React.FC<StockChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="chart-container">
+    <div style={styles.chartContainer}>
       <Line data={chartData} options={options} />
     </div>
   );

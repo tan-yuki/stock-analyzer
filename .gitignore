@@ -58,6 +58,4 @@ tmp/
 temp/
 
 # Old vanilla JS files (replaced by React/TypeScript)
-index.html
-script.js
-style.css
+# script.js (if any old files need to be ignored)

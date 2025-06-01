@@ -16,6 +16,7 @@ class StockApiService {
   
   // Fallback company names for when API doesn't provide them
   private readonly COMPANY_NAMES: Record<string, string> = {
+    // US Stocks
     'AAPL': 'Apple Inc.',
     'GOOGL': 'Alphabet Inc.',
     'TSLA': 'Tesla Inc.',
@@ -25,8 +26,48 @@ class StockApiService {
     'META': 'Meta Platforms Inc.',
     'GOOG': 'Alphabet Inc.',
     'NFLX': 'Netflix Inc.',
-    'ADBE': 'Adobe Inc.'
+    'ADBE': 'Adobe Inc.',
+    // Japanese Stocks (with .T suffix)
+    '7203.T': 'トヨタ自動車株式会社',
+    '9984.T': 'ソフトバンクグループ株式会社',
+    '7974.T': '任天堂株式会社',
+    '6758.T': 'ソニーグループ株式会社',
+    '9983.T': 'ファーストリテイリング',
+    '6861.T': 'キーエンス',
+    '4519.T': '中外製薬',
+    '7267.T': 'ホンダ',
+    '6954.T': 'ファナック',
+    '8306.T': '三菱UFJフィナンシャル・グループ',
+    // Japanese Stocks (without .T suffix for convenience)
+    '7203': 'トヨタ自動車株式会社',
+    '9984': 'ソフトバンクグループ株式会社',
+    '7974': '任天堂株式会社',
+    '6758': 'ソニーグループ株式会社',
+    '9983': 'ファーストリテイリング',
+    '6861': 'キーエンス',
+    '4519': '中外製薬',
+    '7267': 'ホンダ',
+    '6954': 'ファナック',
+    '8306': '三菱UFJフィナンシャル・グループ'
   };
+
+  // Normalize symbol for API calls (add .T suffix for Japanese stocks)
+  private normalizeSymbol(symbol: string): string {
+    const cleanSymbol = symbol.trim().toUpperCase();
+    
+    // If already has .T suffix, return as is
+    if (cleanSymbol.endsWith('.T')) {
+      return cleanSymbol;
+    }
+    
+    // Check if it's a Japanese stock code (4-digit number)
+    if (/^\d{4}$/.test(cleanSymbol)) {
+      return `${cleanSymbol}.T`;
+    }
+    
+    // Return as is for US stocks and other formats
+    return cleanSymbol;
+  }
 
   async fetchStockData(symbol: string, period: TimePeriod): Promise<StockData> {
     try {
@@ -35,10 +76,13 @@ class StockApiService {
         console.warn('Using demo API key. For production use, get a free API key from Alpha Vantage.');
       }
 
+      // Normalize symbol for API calls (add .T suffix for Japanese stocks if needed)
+      const normalizedSymbol = this.normalizeSymbol(symbol);
+
       // Fetch company information and price data concurrently for better performance
       const [companyName, priceData] = await Promise.all([
-        this.fetchCompanyName(symbol),
-        this.fetchPriceData(symbol)
+        this.fetchCompanyName(normalizedSymbol),
+        this.fetchPriceData(normalizedSymbol)
       ]);
       
       // Filter data based on period
@@ -92,11 +136,17 @@ class StockApiService {
         return data.Name;
       }
       
-      // Fallback to predefined company names
-      return this.COMPANY_NAMES[symbol] || `${symbol} Corporation`;
+      // Fallback to predefined company names (try both original and without .T suffix)
+      const originalSymbol = symbol.replace('.T', '');
+      return this.COMPANY_NAMES[symbol] || 
+             this.COMPANY_NAMES[originalSymbol] || 
+             `${symbol} Corporation`;
     } catch (error) {
       console.error('Failed to fetch company name:', error);
-      return this.COMPANY_NAMES[symbol] || `${symbol} Corporation`;
+      const originalSymbol = symbol.replace('.T', '');
+      return this.COMPANY_NAMES[symbol] || 
+             this.COMPANY_NAMES[originalSymbol] || 
+             `${symbol} Corporation`;
     }
   }
 
@@ -201,9 +251,15 @@ class StockApiService {
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
+    // Try to get company name with both original symbol and normalized symbol
+    const normalizedSymbol = this.normalizeSymbol(symbol);
+    const companyName = this.COMPANY_NAMES[symbol] || 
+                       this.COMPANY_NAMES[normalizedSymbol] || 
+                       `${symbol} Corporation`;
+
     return {
       symbol,
-      companyName: this.COMPANY_NAMES[symbol] || `${symbol} Corporation`,
+      companyName,
       prices,
       currentPrice: prices[prices.length - 1].price,
       previousPrice: prices[prices.length - 2]?.price || prices[prices.length - 1].price

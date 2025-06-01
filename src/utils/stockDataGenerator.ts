@@ -1,13 +1,36 @@
 import { StockData, StockPrice, CompanyInfo, TimePeriod } from '../types';
 
 const COMPANIES: Record<string, CompanyInfo> = {
+  // US Stocks
   'AAPL': { name: 'Apple Inc.', basePrice: 150 },
   'GOOGL': { name: 'Alphabet Inc.', basePrice: 2800 },
   'TSLA': { name: 'Tesla Inc.', basePrice: 800 },
   'MSFT': { name: 'Microsoft Corporation', basePrice: 330 },
   'AMZN': { name: 'Amazon.com Inc.', basePrice: 3300 },
   'NVDA': { name: 'NVIDIA Corporation', basePrice: 220 },
-  'META': { name: 'Meta Platforms Inc.', basePrice: 320 }
+  'META': { name: 'Meta Platforms Inc.', basePrice: 320 },
+  // Japanese Stocks (with .T suffix)
+  '7203.T': { name: 'トヨタ自動車株式会社', basePrice: 2400 },
+  '9984.T': { name: 'ソフトバンクグループ株式会社', basePrice: 5100 },
+  '7974.T': { name: '任天堂株式会社', basePrice: 5800 },
+  '6758.T': { name: 'ソニーグループ株式会社', basePrice: 11500 },
+  '9983.T': { name: 'ファーストリテイリング', basePrice: 8400 },
+  '6861.T': { name: 'キーエンス', basePrice: 46000 },
+  '4519.T': { name: '中外製薬', basePrice: 3600 },
+  '7267.T': { name: 'ホンダ', basePrice: 2800 },
+  '6954.T': { name: 'ファナック', basePrice: 20000 },
+  '8306.T': { name: '三菱UFJフィナンシャル・グループ', basePrice: 850 },
+  // Japanese Stocks (without .T suffix for convenience)
+  '7203': { name: 'トヨタ自動車株式会社', basePrice: 2400 },
+  '9984': { name: 'ソフトバンクグループ株式会社', basePrice: 5100 },
+  '7974': { name: '任天堂株式会社', basePrice: 5800 },
+  '6758': { name: 'ソニーグループ株式会社', basePrice: 11500 },
+  '9983': { name: 'ファーストリテイリング', basePrice: 8400 },
+  '6861': { name: 'キーエンス', basePrice: 46000 },
+  '4519': { name: '中外製薬', basePrice: 3600 },
+  '7267': { name: 'ホンダ', basePrice: 2800 },
+  '6954': { name: 'ファナック', basePrice: 20000 },
+  '8306': { name: '三菱UFJフィナンシャル・グループ', basePrice: 850 }
 };
 
 export const generateMockStockData = (symbol: string, period: TimePeriod): StockData => {

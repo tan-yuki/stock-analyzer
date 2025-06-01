@@ -146,7 +146,7 @@ describe('StockForm', () => {
   it('プレースホルダーテキストが表示される', () => {
     render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
 
-    expect(screen.getByPlaceholderText('例: AAPL, GOOGL, TSLA')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('例: AAPL, 7203 (トヨタ), 9984 (SBG)')).toBeInTheDocument()
   })
 
   it('適切なラベルが関連付けられている', () => {
@@ -154,6 +154,30 @@ describe('StockForm', () => {
 
     expect(screen.getByLabelText('銘柄コード：')).toBeInTheDocument()
     expect(screen.getByLabelText('期間：')).toBeInTheDocument()
+  })
+
+  it('日本株のヘルプテキストが表示される', () => {
+    render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
+
+    expect(screen.getByText(/🇺🇸 米国株: AAPL, GOOGL, TSLA, MSFT, NVDA/)).toBeInTheDocument()
+    expect(screen.getByText(/🇯🇵 日本株: 7203 \(トヨタ\), 9984 \(SBG\), 7974 \(任天堂\), 6758 \(ソニー\)/)).toBeInTheDocument()
+  })
+
+  it('日本株コードでも正しく送信される', async () => {
+    const user = userEvent.setup()
+    render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
+
+    const input = screen.getByLabelText('銘柄コード：')
+    const button = screen.getByRole('button', { name: '分析開始' })
+
+    await user.clear(input)
+    await user.type(input, '7203')
+    await user.click(button)
+
+    expect(mockOnSubmit).toHaveBeenCalledWith({
+      symbol: '7203',
+      period: '6mo'
+    })
   })
 
   it('フォームが複数回送信できる', async () => {

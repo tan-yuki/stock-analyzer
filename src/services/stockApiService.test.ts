@@ -47,6 +47,33 @@ describe('StockApiService', () => {
       expect(result1y.prices.length).toBeGreaterThan(0)
     })
 
+    it('日本株コードで正常な処理ができる', async () => {
+      const result = await stockApiService.fetchStockData('7203', '1mo')
+
+      expect(result.symbol).toBe('7203')
+      // In test environment, fallback data is used, so check for fallback behavior
+      expect(result.companyName).toContain('トヨタ自動車株式会社')
+      expect(result.prices.length).toBeGreaterThan(0)
+      expect(result.currentPrice).toBeGreaterThan(0)
+      expect(result.previousPrice).toBeGreaterThan(0)
+
+      // 価格データの構造を確認
+      result.prices.forEach(price => {
+        expect(price.date).toBeInstanceOf(Date)
+        expect(typeof price.price).toBe('number')
+        expect(price.price).toBeGreaterThan(0)
+      })
+    })
+
+    it('日本株コード（.T付き）で正常な処理ができる', async () => {
+      const result = await stockApiService.fetchStockData('7203.T', '1mo')
+
+      expect(result.symbol).toBe('7203.T')
+      // In test environment, fallback data is used, so check for fallback behavior
+      expect(result.companyName).toContain('トヨタ自動車株式会社')
+      expect(result.prices.length).toBeGreaterThan(0)
+    })
+
     it('空の銘柄コードでフォールバック', async () => {
       const result = await stockApiService.fetchStockData('', '1mo')
 

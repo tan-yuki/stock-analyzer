@@ -12,6 +12,12 @@ const styles = {
     padding: '24px',
     borderBottom: '1px solid #e0e0e0',
   },
+  helpText: {
+    fontSize: '12px',
+    color: '#666',
+    marginTop: '5px',
+    lineHeight: '1.4',
+  },
   formGroup: {
     display: 'inline-block',
     marginRight: '20px',
@@ -87,7 +93,7 @@ export const StockForm: React.FC<StockFormProps> = ({ onSubmit, loading }) => {
           <input
             type="text"
             id="stock-symbol"
-            placeholder="例: AAPL, GOOGL, TSLA"
+            placeholder="例: AAPL, 7203 (トヨタ), 9984 (SBG)"
             value={formData.symbol}
             onChange={(e) => setFormData(prev => ({ ...prev, symbol: e.target.value }))}
             onKeyPress={handleKeyPress}
@@ -98,6 +104,10 @@ export const StockForm: React.FC<StockFormProps> = ({ onSubmit, loading }) => {
             }}
             className="responsive-input"
           />
+          <div style={styles.helpText}>
+            🇺🇸 米国株: AAPL, GOOGL, TSLA, MSFT, NVDA<br/>
+            🇯🇵 日本株: 7203 (トヨタ), 9984 (SBG), 7974 (任天堂), 6758 (ソニー)
+          </div>
         </div>
         
         <div style={styles.formGroup} className="responsive-form-group">

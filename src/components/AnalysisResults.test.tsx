@@ -123,40 +123,46 @@ describe('AnalysisResults', () => {
     expect(screen.getByText('500.75%')).toBeInTheDocument()
   })
 
-  it('適切なCSSクラスが適用される', () => {
+  it('適切な構造で表示される', () => {
     render(<AnalysisResults analysis={mockStockAnalysis} />)
 
-    const analysisResults = document.querySelector('.analysis-results')
-    const metrics = document.querySelector('.metrics')
-    const metricElements = document.querySelectorAll('.metric')
-
-    expect(analysisResults).toBeInTheDocument()
-    expect(metrics).toBeInTheDocument()
-    expect(metricElements).toHaveLength(5) // 5つの指標
+    // Title is rendered
+    expect(screen.getByText('分析結果')).toBeInTheDocument()
+    
+    // All metric labels are present
+    expect(screen.getByText('最高値：')).toBeInTheDocument()
+    expect(screen.getByText('最安値：')).toBeInTheDocument()
+    expect(screen.getByText('平均値：')).toBeInTheDocument()
+    expect(screen.getByText('ボラティリティ：')).toBeInTheDocument()
+    expect(screen.getByText('期間収益率：')).toBeInTheDocument()
   })
 
   it('各指標のラベルと値が正しい構造で表示される', () => {
     render(<AnalysisResults analysis={mockStockAnalysis} />)
 
-    const metricElements = document.querySelectorAll('.metric')
+    // Check that all labels and values are properly paired
+    const labels = document.querySelectorAll('label')
+    const values = document.querySelectorAll('span')
     
-    metricElements.forEach(metric => {
-      const label = metric.querySelector('label')
-      const span = metric.querySelector('span')
-      
-      expect(label).toBeInTheDocument()
-      expect(span).toBeInTheDocument()
+    expect(labels).toHaveLength(5) // 5つの指標ラベル
+    expect(values).toHaveLength(5) // 5つの指標値
+    
+    // Verify each label has corresponding content
+    labels.forEach(label => {
+      expect(label.textContent).toMatch(/：$/)
     })
   })
 
-  it('グリッドレイアウトのための適切な構造を持つ', () => {
+  it('メトリクス表示のための適切な構造を持つ', () => {
     render(<AnalysisResults analysis={mockStockAnalysis} />)
 
-    const metrics = document.querySelector('.metrics')
-    expect(metrics).toBeInTheDocument()
+    // Verify the container has responsive-metrics class for layout
+    const metricsContainer = document.querySelector('.responsive-metrics')
+    expect(metricsContainer).toBeInTheDocument()
     
-    const metricElements = metrics?.querySelectorAll('.metric')
-    expect(metricElements).toHaveLength(5)
+    // Check that all metric divs are rendered
+    const metricDivs = metricsContainer?.querySelectorAll('div')
+    expect(metricDivs).toHaveLength(5)
   })
 
   it('スナップショットテスト', () => {

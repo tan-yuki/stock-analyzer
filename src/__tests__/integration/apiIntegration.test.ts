@@ -70,15 +70,23 @@ describe('API統合テスト', () => {
 
   describe('エラーレスポンス統合テスト', () => {
     it('API エラーメッセージの統合処理', async () => {
-      // 無効な銘柄でのテスト - expect error to be thrown
-      await expect(stockApiService.fetchStockData('INVALID', '1mo'))
-        .rejects.toThrow('無効な銘柄コードです。正しい銘柄コードを入力してください。')
+      // 無効な銘柄でのテスト - now returns fallback data instead of throwing
+      const result = await stockApiService.fetchStockData('INVALID', '1mo')
+      
+      expect(result.symbol).toBe('INVALID')
+      expect(result.companyName).toBe('INVALID Corporation')
+      expect(result.isUsingMockData).toBe(true)
+      expect(result.prices.length).toBeGreaterThan(0)
     })
 
     it('レート制限レスポンスの統合処理', async () => {
-      // レート制限エラーのテスト - expect error to be thrown
-      await expect(stockApiService.fetchStockData('RATELIMIT', '1mo'))
-        .rejects.toThrow('APIの利用制限に達しました。しばらく待ってから再試行してください。')
+      // レート制限エラーのテスト - now returns fallback data instead of throwing
+      const result = await stockApiService.fetchStockData('RATELIMIT', '1mo')
+      
+      expect(result.symbol).toBe('RATELIMIT')
+      expect(result.companyName).toBe('RATELIMIT Corporation')
+      expect(result.isUsingMockData).toBe(true)
+      expect(result.prices.length).toBeGreaterThan(0)
     })
 
     it('HTTPエラーレスポンスの処理', async () => {

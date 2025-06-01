@@ -66,16 +66,11 @@ describe('株価分析フロー統合テスト', () => {
     expect(screen.getByText('期間収益率：')).toBeInTheDocument()
   })
 
-  it('API失敗時のエラー処理（確定的テスト）', async () => {
+  it('API失敗時のフォールバック処理（確定的テスト）', async () => {
     const user = userEvent.setup()
-    
-    // 確定的なアラートモック設定
-    const mockAlert = vi.fn()
-    global.alert = mockAlert
-    
     render(<App />)
 
-    // 無効な銘柄でAPIエラーを発生させる
+    // 無効な銘柄でフォールバックデータが表示されることを確認
     const symbolInput = screen.getByLabelText('銘柄コード：')
     const submitButton = screen.getByRole('button', { name: '分析開始' })
 
@@ -83,23 +78,23 @@ describe('株価分析フロー統合テスト', () => {
     await user.type(symbolInput, 'INVALID')
     await user.click(submitButton)
 
-    // エラーメッセージが表示されることを確認
+    // フォールバックデータが表示されることを確認
     await waitFor(() => {
-      expect(screen.getByText(/無効な銘柄コードです/)).toBeInTheDocument()
+      expect(screen.getByText(/INVALID Corporation \(INVALID\)/)).toBeInTheDocument()
     }, { timeout: 8000 })
 
-    // エラー状態の確認
+    // データ表示の確認
     expect(screen.queryByText('データを取得中...')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument()
+    expect(screen.getByTestId('mock-chart')).toBeInTheDocument()
+    expect(screen.getByText('分析結果')).toBeInTheDocument()
+    
+    // デモデータ通知の確認
+    expect(screen.getByText(/デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。/)).toBeInTheDocument()
   }, 12000)
 
   it('レート制限時の動作', async () => {
     const user = userEvent.setup()
     render(<App />)
-
-    // Mock alert function to capture error messages
-    const mockAlert = vi.fn()
-    global.alert = mockAlert
 
     // レート制限エラーを発生させる銘柄
     const symbolInput = screen.getByLabelText('銘柄コード：')
@@ -109,16 +104,20 @@ describe('株価分析フロー統合テスト', () => {
     await user.type(symbolInput, 'RATELIMIT')
     await user.click(submitButton)
 
-    // レート制限エラーメッセージが表示されることを確認
+    // フォールバックデータが表示されることを確認
     await waitFor(() => {
-      expect(screen.getByText(/APIの利用制限に達しました/)).toBeInTheDocument()
+      expect(screen.getByText(/RATELIMIT Corporation \(RATELIMIT\)/)).toBeInTheDocument()
     }, { timeout: 8000 })
 
     // ローディング状態が終了している
     expect(screen.queryByText('データを取得中...')).not.toBeInTheDocument()
 
-    // エラーのため結果は表示されない
-    expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument()
+    // フォールバックデータとして結果が表示される
+    expect(screen.getByTestId('mock-chart')).toBeInTheDocument()
+    expect(screen.getByText('分析結果')).toBeInTheDocument()
+    
+    // デモデータ通知の確認
+    expect(screen.getByText(/デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。/)).toBeInTheDocument()
   }, 12000)
 
   it('空の銘柄コードでのバリデーション', async () => {

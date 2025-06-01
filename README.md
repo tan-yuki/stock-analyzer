@@ -6,6 +6,14 @@
 
 # 📈 株価分析アプリ
 
+[![CI/CD Pipeline](https://github.com/tan-yuki/stock-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/tan-yuki/stock-analyzer/actions/workflows/ci.yml)
+[![Detailed Test Analysis](https://github.com/tan-yuki/stock-analyzer/actions/workflows/test-detail.yml/badge.svg)](https://github.com/tan-yuki/stock-analyzer/actions/workflows/test-detail.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2.0-blue?logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.0.8-646CFF?logo=vite)](https://vitejs.dev/)
+[![ESLint](https://img.shields.io/badge/ESLint-8.57.1-4B32C3?logo=eslint)](https://eslint.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-1.6.1-6E9F18?logo=vitest)](https://vitest.dev/)
+
 React + TypeScript で構築された日本語の株価分析ツールです。銘柄コードを入力するだけで、株価チャートと統計分析を表示します。
 
 ## ✨ 機能
@@ -25,6 +33,25 @@ React + TypeScript で構築された日本語の株価分析ツールです。�
 - **Chart Library**: Chart.js + react-chartjs-2
 - **Styling**: CSS (カスタムスタイル)
 - **Linting**: ESLint + TypeScript rules
+
+## 🔧 品質保証・CI/CD
+
+### 自動化されたテスト
+- **テストカバレッジ**: 90%以上の高いカバレッジを維持
+- **単体テスト**: コンポーネント・ユーティリティ・サービス層の包括的テスト
+- **統合テスト**: API連携を含むエンドツーエンドフローテスト
+- **Flaky防止**: 確定的なテストデータとタイムアウト制御で安定したテスト実行
+
+### 継続的インテグレーション
+- **GitHub Actions**: プッシュ・プルリクエスト時の自動実行
+- **マルチNode.js対応**: Node.js 18, 20, 22での動作確認
+- **コード品質チェック**: ESLint・TypeScript型チェック・セキュリティ監査
+- **ビルド検証**: 本番環境ビルドの自動検証
+
+### 開発品質
+- **TypeScript厳格設定**: `any`型禁止・完全型安全
+- **Modern React**: 関数コンポーネント・Hooks・コンテキスト対応
+- **アクセシビリティ**: WAI-ARIA準拠・キーボードナビゲーション対応
 
 ## 🚀 セットアップ
 

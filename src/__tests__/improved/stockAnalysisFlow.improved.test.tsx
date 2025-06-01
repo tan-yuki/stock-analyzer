@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '../../test-utils/renderWithProviders'
 import userEvent from '@testing-library/user-event'
-import App from '../../App'
+import { AppWithoutCSS as App } from '../../components/AppWithoutCSS'
 import { server } from '../../test-utils/testServer'
 import { http, HttpResponse } from 'msw'
 import { createDeterministicStockData } from '../../test-utils/deterministicMockData'
@@ -67,7 +67,7 @@ describe('改善された株価分析フロー統合テスト', () => {
     render(<App />)
 
     // 1. 初期状態の確認
-    expect(screen.getByText('📈 株価分析アプリ')).toBeInTheDocument()
+    expect(screen.getByText('📈 株価分析ツール')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '分析開始' })).toBeInTheDocument()
 
     // 2. フォーム入力

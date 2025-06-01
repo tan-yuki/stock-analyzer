@@ -7,6 +7,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-utils/setupTests.ts'],
+    css: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'json-summary', 'html', 'lcov'],
@@ -18,5 +19,8 @@ export default defineConfig({
         '**/*.spec.{ts,tsx}',
       ],
     },
+  },
+  define: {
+    'import.meta.vitest': undefined,
   },
 })

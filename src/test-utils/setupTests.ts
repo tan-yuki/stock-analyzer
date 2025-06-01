@@ -2,9 +2,7 @@ import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 
 // CSS imports をモック
-vi.mock('../style.css', () => ({
-  default: {},
-}))
+vi.mock('../style.css', () => ({}))
 
 // Chart.js のモック
 vi.mock('chart.js', () => {

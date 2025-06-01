@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StockForm } from './StockForm';
 import { LoadingSpinner } from './LoadingSpinner';
 import { StockInfo } from './StockInfo';
@@ -45,7 +45,7 @@ export function AppWithoutCSS() {
           📈 株価分析ツール
         </h1>
         
-        <StockForm onSubmit={handleAnalyzeStock} disabled={loading} />
+        <StockForm onSubmit={handleAnalyzeStock} loading={loading} />
         
         {error && (
           <div style={{ 

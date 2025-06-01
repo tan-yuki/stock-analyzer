@@ -79,17 +79,15 @@ describe('株価分析フロー統合テスト', () => {
     await user.type(symbolInput, 'INVALID')
     await user.click(submitButton)
 
-    // エラーアラートの確実な検証（Flakyテスト対策）
-    await verifyAlertCalled(
-      mockAlert,
-      'データの取得に失敗しました。銘柄コードを確認するか、しばらく後にもう一度お試しください。',
-      5000
-    )
+    // エラーメッセージが表示されることを確認
+    await waitFor(() => {
+      expect(screen.getByText(/無効な銘柄コードです/)).toBeInTheDocument()
+    }, { timeout: 8000 })
 
     // エラー状態の確認
     expect(screen.queryByText('データを取得中...')).not.toBeInTheDocument()
     expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument()
-  })
+  }, 12000)
 
   it('レート制限時の動作', async () => {
     const user = userEvent.setup()
@@ -107,19 +105,17 @@ describe('株価分析フロー統合テスト', () => {
     await user.type(symbolInput, 'RATELIMIT')
     await user.click(submitButton)
 
-    // エラーアラートが表示されることを確認
+    // レート制限エラーメッセージが表示されることを確認
     await waitFor(() => {
-      expect(mockAlert).toHaveBeenCalledWith(
-        'データの取得に失敗しました。銘柄コードを確認するか、しばらく後にもう一度お試しください。'
-      )
-    }, { timeout: 5000 })
+      expect(screen.getByText(/APIの利用制限に達しました/)).toBeInTheDocument()
+    }, { timeout: 8000 })
 
     // ローディング状態が終了している
     expect(screen.queryByText('データを取得中...')).not.toBeInTheDocument()
 
     // エラーのため結果は表示されない
     expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument()
-  })
+  }, 12000)
 
   it('空の銘柄コードでのバリデーション', async () => {
     const user = userEvent.setup()

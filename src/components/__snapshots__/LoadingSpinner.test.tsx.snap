@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LoadingSpinner > スナップショットテスト 1`] = `
+<div
+  class="loading"
+>
+  <div
+    class="spinner"
+  />
+  <p>
+    データを取得中...
+  </p>
+</div>
+`;

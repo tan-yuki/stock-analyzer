@@ -14,10 +14,11 @@ export const StockForm: React.FC<StockFormProps> = ({ onSubmit, loading }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.symbol.trim()) {
+    const trimmedSymbol = formData.symbol.trim();
+    if (trimmedSymbol) {
       onSubmit({
         ...formData,
-        symbol: formData.symbol.trim().toUpperCase()
+        symbol: trimmedSymbol.toUpperCase()
       });
     }
   };

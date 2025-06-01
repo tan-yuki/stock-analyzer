@@ -1,0 +1,70 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AnalysisResults > スナップショットテスト 1`] = `
+<div
+  class="analysis-results"
+>
+  <h3>
+    分析結果
+  </h3>
+  <div
+    class="metrics"
+  >
+    <div
+      class="metric"
+    >
+      <label>
+        最高値：
+      </label>
+      <span>
+        $
+        159.50
+      </span>
+    </div>
+    <div
+      class="metric"
+    >
+      <label>
+        最安値：
+      </label>
+      <span>
+        $
+        148.75
+      </span>
+    </div>
+    <div
+      class="metric"
+    >
+      <label>
+        平均値：
+      </label>
+      <span>
+        $
+        153.47
+      </span>
+    </div>
+    <div
+      class="metric"
+    >
+      <label>
+        ボラティリティ：
+      </label>
+      <span>
+        12.34
+        %
+      </span>
+    </div>
+    <div
+      class="metric"
+    >
+      <label>
+        期間収益率：
+      </label>
+      <span>
+        6.33
+        %
+      </span>
+    </div>
+  </div>
+</div>
+`;

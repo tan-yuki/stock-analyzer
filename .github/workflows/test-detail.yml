@@ -1,0 +1,177 @@
+name: Detailed Test Analysis
+
+# より詳細なテスト分析用のワークフロー
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+env:
+  NODE_VERSION: '20'
+  VITE_ALPHA_VANTAGE_API_KEY: 'demo'
+
+jobs:
+  # 詳細テスト実行
+  detailed-tests:
+    name: Detailed Test Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests with detailed output
+        run: |
+          echo "## 🧪 Running Comprehensive Test Suite" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # コンポーネントテスト
+          echo "### 📦 Component Tests" >> $GITHUB_STEP_SUMMARY
+          npm run test:run -- src/components/ --reporter=verbose | tee component-test-results.txt
+          
+          # ユーティリティテスト
+          echo "### 🔧 Utility Tests" >> $GITHUB_STEP_SUMMARY
+          npm run test:run -- src/utils/ --reporter=verbose | tee utility-test-results.txt
+          
+          # サービステスト
+          echo "### 🌐 Service Tests" >> $GITHUB_STEP_SUMMARY
+          npm run test:run -- src/services/ --reporter=verbose | tee service-test-results.txt
+          
+          # 統合テスト
+          echo "### 🔄 Integration Tests" >> $GITHUB_STEP_SUMMARY
+          npm run test:run -- src/__tests__/integration/ --reporter=verbose | tee integration-test-results.txt
+          
+      - name: Generate coverage report
+        run: |
+          npm run test:coverage -- --reporter=json --reporter=lcov --reporter=text
+          
+      - name: Coverage analysis
+        run: |
+          echo "### 📊 Test Coverage Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat coverage/lcov-report/index.html | grep -o "headerCovTableEntry.*%" | head -4 >> $GITHUB_STEP_SUMMARY || echo "Coverage report not found"
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Flaky test detection
+        run: |
+          echo "### 🔍 Flaky Test Detection" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # テストを3回実行してフレーキーテストを検出
+          for i in {1..3}; do
+            echo "Test Run $i:"
+            npm run test:run --silent > test-run-$i.log 2>&1
+            if [ $? -ne 0 ]; then
+              echo "❌ Test run $i failed" >> $GITHUB_STEP_SUMMARY
+              cat test-run-$i.log >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ Test run $i passed" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
+      - name: Performance metrics
+        run: |
+          echo "### ⚡ Performance Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # テスト実行時間の測定
+          start_time=$(date +%s%N)
+          npm run test:run --silent
+          end_time=$(date +%s%N)
+          duration=$(((end_time - start_time) / 1000000))
+          
+          echo "- **Test Execution Time**: ${duration}ms" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Tests**: $(grep -o 'Tests.*passed' test-run-*.log | head -1)" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            *-test-results.txt
+            coverage/
+            test-run-*.log
+          retention-days: 30
+          
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage/
+          retention-days: 30
+
+  # テスト品質メトリクス
+  test-quality:
+    name: Test Quality Metrics
+    runs-on: ubuntu-latest
+    needs: detailed-tests
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          
+      - name: Analyze test quality
+        run: |
+          echo "## 📈 Test Quality Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # テストファイル数の計算
+          test_files=$(find src -name "*.test.*" | wc -l)
+          source_files=$(find src -name "*.tsx" -o -name "*.ts" | grep -v test | wc -l)
+          test_ratio=$(echo "scale=2; $test_files / $source_files * 100" | bc -l)
+          
+          echo "### 📊 Test Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Test Files**: $test_files" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Files**: $source_files" >> $GITHUB_STEP_SUMMARY
+          echo "- **Test-to-Source Ratio**: ${test_ratio}%" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # テストタイプ別の分析
+          component_tests=$(find src/components -name "*.test.*" | wc -l)
+          utils_tests=$(find src/utils -name "*.test.*" | wc -l)
+          service_tests=$(find src/services -name "*.test.*" | wc -l)
+          integration_tests=$(find src/__tests__ -name "*.test.*" | wc -l)
+          
+          echo "### 🏗️ Test Distribution" >> $GITHUB_STEP_SUMMARY
+          echo "- **Component Tests**: $component_tests" >> $GITHUB_STEP_SUMMARY
+          echo "- **Utility Tests**: $utils_tests" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service Tests**: $service_tests" >> $GITHUB_STEP_SUMMARY
+          echo "- **Integration Tests**: $integration_tests" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # 品質評価
+          if (( $(echo "$test_ratio >= 80" | bc -l) )); then
+            echo "🏆 **Excellent test coverage ratio!**" >> $GITHUB_STEP_SUMMARY
+          elif (( $(echo "$test_ratio >= 60" | bc -l) )); then
+            echo "✅ **Good test coverage ratio.**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Consider adding more tests.**" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StockFormData, TimePeriod } from '../types';
+import { Tooltip } from './Tooltip';
 
 interface StockFormProps {
   onSubmit: (data: StockFormData) => void;
@@ -12,11 +13,10 @@ const styles = {
     padding: '24px',
     borderBottom: '1px solid #e0e0e0',
   },
-  helpText: {
-    fontSize: '12px',
-    color: '#666',
-    marginTop: '5px',
-    lineHeight: '1.4',
+  labelContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '5px',
   },
   formGroup: {
     display: 'inline-block',
@@ -24,8 +24,6 @@ const styles = {
     marginBottom: '15px',
   },
   label: {
-    display: 'block',
-    marginBottom: '5px',
     fontWeight: 600,
     color: '#495057',
   },
@@ -89,11 +87,23 @@ export const StockForm: React.FC<StockFormProps> = ({ onSubmit, loading }) => {
     <div style={styles.inputSection}>
       <form onSubmit={handleSubmit}>
         <div style={styles.formGroup} className="responsive-form-group">
-          <label htmlFor="stock-symbol" style={styles.label}>銘柄コード：</label>
+          <div style={styles.labelContainer}>
+            <label htmlFor="stock-symbol" style={styles.label}>銘柄コード：</label>
+            <Tooltip
+              content={
+                <div>
+                  🇺🇸 米国株: AAPL, GOOGL, TSLA, MSFT, NVDA<br/>
+                  🇯🇵 日本株: 7203 (トヨタ), 9984 (SBG), 7974 (任天堂), 6758 (ソニー)
+                </div>
+              }
+            >
+              ?
+            </Tooltip>
+          </div>
           <input
             type="text"
             id="stock-symbol"
-            placeholder="例: AAPL, 7203 (トヨタ), 9984 (SBG)"
+            placeholder="例: AAPL, 7203"
             value={formData.symbol}
             onChange={(e) => setFormData(prev => ({ ...prev, symbol: e.target.value }))}
             onKeyPress={handleKeyPress}
@@ -104,14 +114,12 @@ export const StockForm: React.FC<StockFormProps> = ({ onSubmit, loading }) => {
             }}
             className="responsive-input"
           />
-          <div style={styles.helpText}>
-            🇺🇸 米国株: AAPL, GOOGL, TSLA, MSFT, NVDA<br/>
-            🇯🇵 日本株: 7203 (トヨタ), 9984 (SBG), 7974 (任天堂), 6758 (ソニー)
-          </div>
         </div>
         
         <div style={styles.formGroup} className="responsive-form-group">
-          <label htmlFor="period" style={styles.label}>期間：</label>
+          <div style={styles.labelContainer}>
+            <label htmlFor="period" style={styles.label}>期間：</label>
+          </div>
           <select
             id="period"
             value={formData.period}

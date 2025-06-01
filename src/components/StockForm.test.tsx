@@ -146,7 +146,7 @@ describe('StockForm', () => {
   it('プレースホルダーテキストが表示される', () => {
     render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
 
-    expect(screen.getByPlaceholderText('例: AAPL, 7203 (トヨタ), 9984 (SBG)')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('例: AAPL, 7203')).toBeInTheDocument()
   })
 
   it('適切なラベルが関連付けられている', () => {
@@ -156,8 +156,18 @@ describe('StockForm', () => {
     expect(screen.getByLabelText('期間：')).toBeInTheDocument()
   })
 
-  it('日本株のヘルプテキストが表示される', () => {
+  it('ツールチップボタンが表示される', () => {
     render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
+
+    expect(screen.getByRole('button', { name: 'ヘルプを表示' })).toBeInTheDocument()
+  })
+
+  it('ツールチップをクリックするとヘルプテキストが表示される', async () => {
+    const user = userEvent.setup()
+    render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
+
+    const tooltipButton = screen.getByRole('button', { name: 'ヘルプを表示' })
+    await user.click(tooltipButton)
 
     expect(screen.getByText(/🇺🇸 米国株: AAPL, GOOGL, TSLA, MSFT, NVDA/)).toBeInTheDocument()
     expect(screen.getByText(/🇯🇵 日本株: 7203 \(トヨタ\), 9984 \(SBG\), 7974 \(任天堂\), 6758 \(ソニー\)/)).toBeInTheDocument()

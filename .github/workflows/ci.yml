@@ -9,7 +9,7 @@ on:
 
 # 環境変数
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   VITE_ALPHA_VANTAGE_API_KEY: 'demo'
 
 jobs:
@@ -42,18 +42,14 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        node-version: ['18', '20', '22']
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22'
           cache: 'npm'
           
       - name: Install dependencies
@@ -66,7 +62,6 @@ jobs:
         run: npm run test:coverage
         
       - name: Upload coverage to Codecov
-        if: matrix.node-version == '20'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage/lcov.info

@@ -2,7 +2,15 @@
   "name": "stock-analyzer",
   "version": "1.0.0",
   "description": "株価分析アプリケーション",
-  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tan-yuki/stock-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tan-yuki/stock-analyzer/issues"
+  },
+  "homepage": "https://github.com/tan-yuki/stock-analyzer#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

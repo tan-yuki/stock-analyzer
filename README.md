@@ -13,8 +13,16 @@
 [![Vite](https://img.shields.io/badge/Vite-5.0.8-646CFF?logo=vite)](https://vitejs.dev/)
 [![ESLint](https://img.shields.io/badge/ESLint-8.57.1-4B32C3?logo=eslint)](https://eslint.org/)
 [![Vitest](https://img.shields.io/badge/Vitest-1.6.1-6E9F18?logo=vitest)](https://vitest.dev/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 React + TypeScript で構築された日本語の株価分析ツールです。銘柄コードを入力するだけで、株価チャートと統計分析を表示します。
+
+## 🌐 ライブデモ
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tan-yuki/stock-analyzer)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tan-yuki/stock-analyzer)
+
+> **デモサイト**: [https://stock-analyzer-demo.vercel.app](https://stock-analyzer-demo.vercel.app) (例)
 
 ## ✨ 機能
 
@@ -188,7 +196,7 @@ src/
 
 ## 📄 ライセンス
 
-このプロジェクトは MIT ライセンスの下で公開されています。
+このプロジェクトは [MIT ライセンス](LICENSE) の下で公開されています。詳細は [LICENSE](LICENSE) ファイルをご覧ください。
 
 ## 🙏 謝辞
 

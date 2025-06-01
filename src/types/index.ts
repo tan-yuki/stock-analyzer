@@ -9,6 +9,7 @@ export interface StockData {
   prices: StockPrice[];
   currentPrice: number;
   previousPrice: number;
+  isUsingMockData?: boolean;
 }
 
 export interface StockAnalysis {

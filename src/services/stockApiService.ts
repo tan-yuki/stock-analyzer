@@ -100,23 +100,35 @@ class StockApiService {
         companyName,
         prices: filteredPrices,
         currentPrice,
-        previousPrice
+        previousPrice,
+        isUsingMockData: false
       };
     } catch (error) {
       console.error('API fetch failed, falling back to mock data:', error);
       
       // Check if it's a rate limit error
       if (error instanceof Error && error.message.includes('rate limit')) {
-        throw new Error('APIの利用制限に達しました。しばらく待ってから再試行してください。');
+        console.warn('Rate limit reached, using mock data for demonstration');
+        return this.generateFallbackData(symbol, period);
       }
       
-      // Check if it's an invalid symbol error
+      // For Japanese stocks or unknown symbols, always fallback to mock data
+      const normalizedSymbol = this.normalizeSymbol(symbol);
+      const isJapaneseStock = /^\d{4}\.T$/.test(normalizedSymbol);
+      
+      if (isJapaneseStock) {
+        console.log(`Japanese stock ${symbol} - using mock data for demonstration`);
+        return this.generateFallbackData(symbol, period);
+      }
+      
+      // Check if it's an invalid symbol error for US stocks
       if (error instanceof Error && error.message.includes('Invalid API')) {
-        throw new Error('無効な銘柄コードです。正しい銘柄コードを入力してください。');
+        console.log(`Invalid symbol ${symbol} - using mock data for demonstration`);
+        return this.generateFallbackData(symbol, period);
       }
       
-      // Fallback to mock data for demo purposes
-      console.log('Falling back to mock data for demonstration');
+      // Fallback to mock data for demo purposes in all other cases
+      console.log('Using mock data for demonstration');
       return this.generateFallbackData(symbol, period);
     }
   }
@@ -262,7 +274,8 @@ class StockApiService {
       companyName,
       prices,
       currentPrice: prices[prices.length - 1].price,
-      previousPrice: prices[prices.length - 2]?.price || prices[prices.length - 1].price
+      previousPrice: prices[prices.length - 2]?.price || prices[prices.length - 1].price,
+      isUsingMockData: true
     };
   }
 }

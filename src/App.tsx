@@ -34,6 +34,15 @@ const styles = {
   resultsSection: {
     padding: '24px',
   },
+  mockDataNotice: {
+    background: '#fff3cd',
+    border: '1px solid #ffeaa7',
+    borderRadius: '4px',
+    padding: '12px',
+    marginBottom: '16px',
+    fontSize: '14px',
+    color: '#856404',
+  },
 };
 
 const App: React.FC = () => {
@@ -56,8 +65,10 @@ const App: React.FC = () => {
       setStockData(data);
       setAnalysis(analysisResult);
     } catch (error) {
-      console.error('Error:', error);
-      alert('データの取得に失敗しました。銘柄コードを確認するか、しばらく後にもう一度お試しください。');
+      console.error('Unexpected error:', error);
+      // Since API service now handles all errors with fallback data,
+      // this should rarely be reached
+      alert('予期しないエラーが発生しました。ページを再読み込みして再試行してください。');
     } finally {
       setLoading(false);
     }
@@ -79,6 +90,11 @@ const App: React.FC = () => {
             
             {stockData && !loading && (
               <>
+                {stockData.isUsingMockData && (
+                  <div style={styles.mockDataNotice}>
+                    ℹ️ デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。
+                  </div>
+                )}
                 <StockInfo data={stockData} />
                 <StockChart data={stockData} />
                 {analysis && <AnalysisResults analysis={analysis} />}

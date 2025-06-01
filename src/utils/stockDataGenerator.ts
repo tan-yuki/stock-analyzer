@@ -70,6 +70,7 @@ export const generateMockStockData = (symbol: string, period: TimePeriod): Stock
     companyName: company.name,
     prices,
     currentPrice: prices[prices.length - 1].price,
-    previousPrice: prices[prices.length - 2]?.price || prices[prices.length - 1].price
+    previousPrice: prices[prices.length - 2]?.price || prices[prices.length - 1].price,
+    isUsingMockData: true
   };
 };

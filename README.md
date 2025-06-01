@@ -22,7 +22,7 @@ React + TypeScript で構築された日本語の株価分析ツールです。�
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tan-yuki/stock-analyzer)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tan-yuki/stock-analyzer)
 
-> **デモサイト**: [https://stock-analyzer-demo.vercel.app](https://stock-analyzer-demo.vercel.app) (例)
+> **デモサイト**: [https://stock-analyzer-mocha.vercel.app/](https://stock-analyzer-mocha.vercel.app/) 
 
 ## ✨ 機能
 

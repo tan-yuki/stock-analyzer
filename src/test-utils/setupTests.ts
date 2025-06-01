@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 
+// CSS imports をモック
+vi.mock('../style.css', () => ({
+  default: {},
+}))
+
 // Chart.js のモック
 vi.mock('chart.js', () => {
   const mockChart = vi.fn().mockImplementation(() => ({

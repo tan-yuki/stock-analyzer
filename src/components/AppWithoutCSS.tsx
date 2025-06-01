@@ -64,6 +64,19 @@ export function AppWithoutCSS() {
         
         {stockData && (
           <div style={{ marginTop: '2rem' }}>
+            {stockData.isUsingMockData && (
+              <div style={{
+                background: '#fff3cd',
+                border: '1px solid #ffeaa7',
+                borderRadius: '4px',
+                padding: '12px',
+                marginBottom: '16px',
+                fontSize: '14px',
+                color: '#856404',
+              }}>
+                ℹ️ デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。
+              </div>
+            )}
             <StockInfo data={stockData} />
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>

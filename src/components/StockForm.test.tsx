@@ -173,6 +173,23 @@ describe('StockForm', () => {
     expect(screen.getByText(/🇯🇵 日本株: 7203 \(トヨタ\), 9984 \(SBG\), 7974 \(任天堂\), 6758 \(ソニー\)/)).toBeInTheDocument()
   })
 
+  it('ツールチップの閉じるボタンが機能する', async () => {
+    const user = userEvent.setup()
+    render(<StockForm onSubmit={mockOnSubmit} loading={false} />)
+
+    // ツールチップを開く
+    const tooltipButton = screen.getByRole('button', { name: 'ヘルプを表示' })
+    await user.click(tooltipButton)
+
+    expect(screen.getByText(/🇺🇸 米国株/)).toBeInTheDocument()
+
+    // 閉じるボタンをクリック
+    const closeButton = screen.getByRole('button', { name: '閉じる' })
+    await user.click(closeButton)
+
+    expect(screen.queryByText(/🇺🇸 米国株/)).not.toBeInTheDocument()
+  })
+
   it('日本株コードでも正しく送信される', async () => {
     const user = userEvent.setup()
     render(<StockForm onSubmit={mockOnSubmit} loading={false} />)

@@ -11,52 +11,64 @@ const styles = {
     display: 'inline-block',
   },
   trigger: {
-    background: 'none',
-    border: 'none',
+    background: '#e3f2fd',
+    border: '1px solid #2196F3',
     cursor: 'pointer',
-    padding: '2px 4px',
+    padding: '2px',
     borderRadius: '50%',
-    fontSize: '12px',
-    color: '#666',
-    width: '16px',
-    height: '16px',
+    fontSize: '11px',
+    color: '#1976D2',
+    width: '18px',
+    height: '18px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: '6px',
+    marginLeft: '8px',
+    fontWeight: 'bold',
+    transition: 'all 0.2s ease',
   },
   triggerHover: {
-    background: '#f0f0f0',
-    color: '#333',
+    background: '#2196F3',
+    color: 'white',
+    transform: 'scale(1.1)',
   },
   tooltip: {
-    position: 'absolute' as const,
-    bottom: '100%',
+    position: 'fixed' as const,
+    top: '50%',
     left: '50%',
-    transform: 'translateX(-50%)',
-    marginBottom: '8px',
+    transform: 'translate(-50%, -50%)',
     background: '#333',
     color: 'white',
-    padding: '12px',
-    borderRadius: '6px',
-    fontSize: '13px',
-    lineHeight: '1.4',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-    zIndex: 1000,
-    minWidth: '200px',
-    maxWidth: '300px',
+    padding: '16px',
+    borderRadius: '8px',
+    fontSize: '14px',
+    lineHeight: '1.5',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+    zIndex: 9999,
+    minWidth: '280px',
+    maxWidth: '350px',
     whiteSpace: 'normal' as const,
   },
-  arrow: {
+  overlay: {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.3)',
+    zIndex: 9998,
+  },
+  closeButton: {
     position: 'absolute' as const,
-    top: '100%',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: 0,
-    height: 0,
-    borderLeft: '6px solid transparent',
-    borderRight: '6px solid transparent',
-    borderTop: '6px solid #333',
+    top: '8px',
+    right: '12px',
+    background: 'none',
+    border: 'none',
+    color: 'white',
+    fontSize: '18px',
+    cursor: 'pointer',
+    padding: '4px',
+    lineHeight: 1,
   },
 };
 
@@ -76,7 +88,11 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
     setIsHovered(false);
   };
 
-  const handleBlur = () => {
+  const handleClose = () => {
+    setIsVisible(false);
+  };
+
+  const handleOverlayClick = () => {
     setIsVisible(false);
   };
 
@@ -87,7 +103,6 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onBlur={handleBlur}
         style={{
           ...styles.trigger,
           ...(isHovered ? styles.triggerHover : {}),
@@ -97,10 +112,20 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
         {children}
       </button>
       {isVisible && (
-        <div style={styles.tooltip}>
-          {content}
-          <div style={styles.arrow} />
-        </div>
+        <>
+          <div style={styles.overlay} onClick={handleOverlayClick} />
+          <div style={styles.tooltip}>
+            <button
+              type="button"
+              onClick={handleClose}
+              style={styles.closeButton}
+              aria-label="閉じる"
+            >
+              ×
+            </button>
+            {content}
+          </div>
+        </>
       )}
     </div>
   );

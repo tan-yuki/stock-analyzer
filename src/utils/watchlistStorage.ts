@@ -2,6 +2,20 @@ import { Watchlist, WatchlistItem } from '../types';
 
 const WATCHLIST_STORAGE_KEY = 'stock-analyzer-watchlist';
 
+// JSON解析用の型定義
+interface StoredWatchlistItem {
+  symbol: string;
+  companyName: string;
+  addedAt: string;
+  lastPrice?: number;
+  priceChange?: number;
+}
+
+interface StoredWatchlist {
+  items: StoredWatchlistItem[];
+  lastUpdated: string;
+}
+
 /**
  * ウォッチリストをlocalStorageから読み込み
  */
@@ -15,9 +29,9 @@ export const loadWatchlist = (): Watchlist => {
       };
     }
     
-    const parsed = JSON.parse(stored);
+    const parsed: StoredWatchlist = JSON.parse(stored);
     return {
-      items: parsed.items.map((item: any) => ({
+      items: parsed.items.map((item: StoredWatchlistItem) => ({
         ...item,
         addedAt: new Date(item.addedAt)
       })),

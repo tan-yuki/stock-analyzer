@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StockForm } from './components/StockForm';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { StockInfo } from './components/StockInfo';
 import { StockChart } from './components/StockChart';
 import { AnalysisResults } from './components/AnalysisResults';
+import { Watchlist } from './components/Watchlist';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { stockApiService } from './services/stockApiService';
 import { calculateStockAnalysis } from './utils/stockAnalysis';
-import { StockData, StockAnalysis, StockFormData } from './types';
+import { StockData, StockAnalysis, StockFormData, Watchlist as WatchlistType } from './types';
+import { 
+  loadWatchlist, 
+  addToWatchlist, 
+  removeFromWatchlist, 
+  isInWatchlist,
+  updateWatchlistItemPrice 
+} from './utils/watchlistStorage';
 
 const styles = {
   container: {
@@ -49,6 +57,29 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [stockData, setStockData] = useState<StockData | null>(null);
   const [analysis, setAnalysis] = useState<StockAnalysis | null>(null);
+  const [watchlist, setWatchlist] = useState<WatchlistType>({ items: [], lastUpdated: new Date() });
+
+  // ウォッチリストを初期化
+  useEffect(() => {
+    const savedWatchlist = loadWatchlist();
+    setWatchlist(savedWatchlist);
+  }, []);
+
+  // ウォッチリスト操作のハンドラー
+  const handleAddToWatchlist = (symbol: string, companyName: string) => {
+    const updatedWatchlist = addToWatchlist(symbol, companyName);
+    setWatchlist(updatedWatchlist);
+  };
+
+  const handleRemoveFromWatchlist = (symbol: string) => {
+    const updatedWatchlist = removeFromWatchlist(symbol);
+    setWatchlist(updatedWatchlist);
+  };
+
+  const handleSelectWatchlistStock = (symbol: string) => {
+    // ウォッチリストから銘柄が選択された時、自動で分析を実行
+    handleAnalyzeStock({ symbol, period: '1mo' });
+  };
 
   const handleAnalyzeStock = async (formData: StockFormData) => {
     if (!formData.symbol) {
@@ -64,6 +95,15 @@ const App: React.FC = () => {
       
       setStockData(data);
       setAnalysis(analysisResult);
+
+      // ウォッチリスト内の該当銘柄の価格を更新
+      if (isInWatchlist(data.symbol)) {
+        const priceChange = data.currentPrice - data.previousPrice;
+        updateWatchlistItemPrice(data.symbol, data.currentPrice, priceChange);
+        // ウォッチリストの状態も更新
+        const updatedWatchlist = loadWatchlist();
+        setWatchlist(updatedWatchlist);
+      }
     } catch (error) {
       console.error('Unexpected error:', error);
       // Since API service now handles all errors with fallback data,
@@ -82,6 +122,13 @@ const App: React.FC = () => {
           <h1 style={styles.headerTitle} className="responsive-header-title">📈 株価分析アプリ</h1>
         </header>
         
+        {/* ウォッチリスト */}
+        <Watchlist 
+          items={watchlist.items}
+          onSelectStock={handleSelectWatchlistStock}
+          onRemoveStock={handleRemoveFromWatchlist}
+        />
+        
         <main style={styles.main}>
           <StockForm onSubmit={handleAnalyzeStock} loading={loading} />
           
@@ -95,7 +142,12 @@ const App: React.FC = () => {
                     ℹ️ デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。
                   </div>
                 )}
-                <StockInfo data={stockData} />
+                <StockInfo 
+                  data={stockData}
+                  isInWatchlist={isInWatchlist(stockData.symbol)}
+                  onAddToWatchlist={handleAddToWatchlist}
+                  onRemoveFromWatchlist={handleRemoveFromWatchlist}
+                />
                 <StockChart data={stockData} />
                 {analysis && <AnalysisResults analysis={analysis} />}
               </>

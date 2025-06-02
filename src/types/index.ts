@@ -31,3 +31,17 @@ export interface StockFormData {
   symbol: string;
   period: TimePeriod;
 }
+
+// ウォッチリスト関連の型定義
+export interface WatchlistItem {
+  symbol: string;
+  companyName: string;
+  addedAt: Date;
+  lastPrice?: number;
+  priceChange?: number;
+}
+
+export interface Watchlist {
+  items: WatchlistItem[];
+  lastUpdated: Date;
+}

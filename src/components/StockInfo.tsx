@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StockData } from '../types';
 
 interface StockInfoProps {
   data: StockData;
+  isInWatchlist?: boolean;
+  onAddToWatchlist?: (symbol: string, companyName: string) => void;
+  onRemoveFromWatchlist?: (symbol: string) => void;
 }
 
 const styles = {
@@ -42,12 +45,61 @@ const styles = {
     background: '#ffebee',
     color: '#c62828',
   },
+  watchlistActions: {
+    marginTop: '16px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  watchlistButton: {
+    padding: '8px 16px',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: 500,
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+  addButton: {
+    background: '#e3f2fd',
+    color: '#1976d2',
+    border: '1px solid #bbdefb',
+  },
+  addButtonHover: {
+    background: '#bbdefb',
+    color: '#0d47a1',
+  },
+  removeButton: {
+    background: '#ffebee',
+    color: '#c62828',
+    border: '1px solid #ffcdd2',
+  },
+  removeButtonHover: {
+    background: '#ffcdd2',
+    color: '#b71c1c',
+  },
 };
 
-export const StockInfo: React.FC<StockInfoProps> = ({ data }) => {
+export const StockInfo: React.FC<StockInfoProps> = ({ 
+  data, 
+  isInWatchlist = false,
+  onAddToWatchlist,
+  onRemoveFromWatchlist 
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
   const priceChange = data.currentPrice - data.previousPrice;
   const priceChangePercent = (priceChange / data.previousPrice) * 100;
   const isPositive = priceChange >= 0;
+
+  const handleWatchlistToggle = () => {
+    if (isInWatchlist && onRemoveFromWatchlist) {
+      onRemoveFromWatchlist(data.symbol);
+    } else if (!isInWatchlist && onAddToWatchlist) {
+      onAddToWatchlist(data.symbol, data.companyName);
+    }
+  };
 
   return (
     <div style={styles.stockInfo} data-testid="stock-info">
@@ -61,6 +113,32 @@ export const StockInfo: React.FC<StockInfoProps> = ({ data }) => {
           {isPositive ? '+' : ''}${priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
         </span>
       </div>
+      
+      {(onAddToWatchlist || onRemoveFromWatchlist) && (
+        <div style={styles.watchlistActions}>
+          <button
+            style={{
+              ...styles.watchlistButton,
+              ...(isInWatchlist ? styles.removeButton : styles.addButton),
+              ...(isHovered ? (isInWatchlist ? styles.removeButtonHover : styles.addButtonHover) : {})
+            }}
+            onClick={handleWatchlistToggle}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            data-testid={isInWatchlist ? "remove-from-watchlist" : "add-to-watchlist"}
+          >
+            {isInWatchlist ? (
+              <>
+                ⭐ ウォッチリストから削除
+              </>
+            ) : (
+              <>
+                ☆ ウォッチリストに追加
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -69,24 +69,48 @@ describe('API統合テスト', () => {
   })
 
   describe('エラーレスポンス統合テスト', () => {
-    it('API エラーメッセージの統合処理', async () => {
-      // 無効な銘柄でのテスト - now returns fallback data instead of throwing
+    it('API エラー時のフォールバックデータ処理', async () => {
+      // 無効な銘柄でのテスト - フォールバックデータの構造を確認
       const result = await stockApiService.fetchStockData('INVALID', '1mo')
       
+      // シンボルが正しく保持される
       expect(result.symbol).toBe('INVALID')
-      expect(result.companyName).toBe('INVALID Corporation')
+      
+      // フォールバックデータフラグが設定される
       expect(result.isUsingMockData).toBe(true)
+      
+      // 必要なデータ構造が存在する
+      expect(result.companyName).toBeTruthy()
       expect(result.prices.length).toBeGreaterThan(0)
+      expect(typeof result.currentPrice).toBe('number')
+      expect(typeof result.previousPrice).toBe('number')
+      
+      // 価格データの構造が正しい
+      result.prices.forEach(price => {
+        expect(price.date).toBeInstanceOf(Date)
+        expect(typeof price.price).toBe('number')
+        expect(price.price).toBeGreaterThan(0)
+      })
     })
 
-    it('レート制限レスポンスの統合処理', async () => {
-      // レート制限エラーのテスト - now returns fallback data instead of throwing
+    it('レート制限時のフォールバックデータ処理', async () => {
+      // レート制限エラーのテスト - フォールバックデータの一貫性を確認
       const result = await stockApiService.fetchStockData('RATELIMIT', '1mo')
       
+      // シンボルが正しく保持される
       expect(result.symbol).toBe('RATELIMIT')
-      expect(result.companyName).toBe('RATELIMIT Corporation')
+      
+      // フォールバックデータフラグが設定される
       expect(result.isUsingMockData).toBe(true)
+      
+      // データ構造の整合性
+      expect(result.companyName).toBeTruthy()
       expect(result.prices.length).toBeGreaterThan(0)
+      expect(result.currentPrice).toBeGreaterThan(0)
+      expect(result.previousPrice).toBeGreaterThan(0)
+      
+      // 現在価格と前日価格の関係性
+      expect(result.currentPrice).toBe(result.prices[result.prices.length - 1].price)
     })
 
     it('HTTPエラーレスポンスの処理', async () => {

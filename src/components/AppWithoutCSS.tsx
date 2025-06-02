@@ -73,7 +73,7 @@ export function AppWithoutCSS() {
                 marginBottom: '16px',
                 fontSize: '14px',
                 color: '#856404',
-              }}>
+              }} data-testid="mock-data-notice">
                 ℹ️ デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。
               </div>
             )}

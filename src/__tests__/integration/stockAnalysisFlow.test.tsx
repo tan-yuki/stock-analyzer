@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '../../test-utils/renderWithProviders'
 import userEvent from '@testing-library/user-event'
 import { AppWithoutCSS as App } from '../../components/AppWithoutCSS'
 import { server } from '../../test-utils/testServer'
-import { waitForElementSafely, verifyAlertCalled, waitForElementToAppear } from '../../test-utils/testHelpers'
+import { waitForElementSafely, verifyAlertCalled, waitForElementToAppear, verifyFallbackDataBehavior, verifyStockDataDisplayed, verifyMockDataNoticeDisplayed } from '../../test-utils/testHelpers'
 import { withTimeout, sequentialAsync } from '../../test-utils/asyncTestHelpers'
 
 // MSW サーバーのセットアップ
@@ -78,18 +78,11 @@ describe('株価分析フロー統合テスト', () => {
     await user.type(symbolInput, 'INVALID')
     await user.click(submitButton)
 
-    // フォールバックデータが表示されることを確認
-    await waitFor(() => {
-      expect(screen.getByText(/INVALID Corporation \(INVALID\)/)).toBeInTheDocument()
-    }, { timeout: 8000 })
+    // 堅牢なヘルパー関数を使用してフォールバック動作を確認
+    await verifyFallbackDataBehavior('INVALID')
 
-    // データ表示の確認
+    // ローディング状態が終了していることを確認
     expect(screen.queryByText('データを取得中...')).not.toBeInTheDocument()
-    expect(screen.getByTestId('mock-chart')).toBeInTheDocument()
-    expect(screen.getByText('分析結果')).toBeInTheDocument()
-    
-    // デモデータ通知の確認
-    expect(screen.getByText(/デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。/)).toBeInTheDocument()
   }, 12000)
 
   it('レート制限時の動作', async () => {
@@ -104,20 +97,11 @@ describe('株価分析フロー統合テスト', () => {
     await user.type(symbolInput, 'RATELIMIT')
     await user.click(submitButton)
 
-    // フォールバックデータが表示されることを確認
-    await waitFor(() => {
-      expect(screen.getByText(/RATELIMIT Corporation \(RATELIMIT\)/)).toBeInTheDocument()
-    }, { timeout: 8000 })
+    // 堅牢なヘルパー関数を使用してフォールバック動作を確認
+    await verifyFallbackDataBehavior('RATELIMIT')
 
-    // ローディング状態が終了している
+    // ローディング状態が終了していることを確認
     expect(screen.queryByText('データを取得中...')).not.toBeInTheDocument()
-
-    // フォールバックデータとして結果が表示される
-    expect(screen.getByTestId('mock-chart')).toBeInTheDocument()
-    expect(screen.getByText('分析結果')).toBeInTheDocument()
-    
-    // デモデータ通知の確認
-    expect(screen.getByText(/デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。/)).toBeInTheDocument()
   }, 12000)
 
   it('空の銘柄コードでのバリデーション', async () => {

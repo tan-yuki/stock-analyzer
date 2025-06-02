@@ -81,3 +81,44 @@ export const verifyAlertCalled = async (
     expect(mockAlert).toHaveBeenCalledWith(expectedMessage)
   }, { timeout })
 }
+
+/**
+ * 株価データが表示されているかを確認する（テキストに依存しない）
+ */
+export const verifyStockDataDisplayed = async (symbol: string) => {
+  // data-testidを使用してより堅牢にチェック
+  await waitForElementSafely('stock-info', { testId: true })
+  
+  const companyNameElement = screen.getByTestId('company-name')
+  expect(companyNameElement.textContent).toContain(symbol)
+  
+  const currentPriceElement = screen.getByTestId('current-price')
+  expect(currentPriceElement.textContent).toMatch(/\$\d+\.\d{2}/)
+  
+  const priceChangeElement = screen.getByTestId('price-change')
+  expect(priceChangeElement.textContent).toMatch(/[+\-$]*\d+\.\d{2}\s*\([+-]\d+\.\d{2}%\)/)
+}
+
+/**
+ * モックデータ通知が表示されているかを確認する
+ */
+export const verifyMockDataNoticeDisplayed = async () => {
+  await waitForElementSafely('mock-data-notice', { testId: true })
+}
+
+/**
+ * チャートと分析結果が表示されているかを確認する
+ */
+export const verifyAnalysisResultsDisplayed = async () => {
+  await waitForElementSafely('mock-chart', { testId: true })
+  expect(screen.getByText('分析結果')).toBeInTheDocument()
+}
+
+/**
+ * フォールバックデータが正しく処理されているかを確認する
+ */
+export const verifyFallbackDataBehavior = async (symbol: string) => {
+  await verifyStockDataDisplayed(symbol)
+  await verifyMockDataNoticeDisplayed()
+  await verifyAnalysisResultsDisplayed()
+}

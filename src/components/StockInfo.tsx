@@ -50,14 +50,14 @@ export const StockInfo: React.FC<StockInfoProps> = ({ data }) => {
   const isPositive = priceChange >= 0;
 
   return (
-    <div style={styles.stockInfo}>
-      <h2 style={styles.title}>{data.companyName} ({data.symbol})</h2>
+    <div style={styles.stockInfo} data-testid="stock-info">
+      <h2 style={styles.title} data-testid="company-name">{data.companyName} ({data.symbol})</h2>
       <div style={styles.priceDisplay} className="responsive-price-display">
-        <span style={styles.currentPrice}>${data.currentPrice.toFixed(2)}</span>
+        <span style={styles.currentPrice} data-testid="current-price">${data.currentPrice.toFixed(2)}</span>
         <span style={{
           ...styles.priceChange,
           ...(isPositive ? styles.priceChangePositive : styles.priceChangeNegative),
-        }}>
+        }} data-testid="price-change">
           {isPositive ? '+' : ''}${priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
         </span>
       </div>

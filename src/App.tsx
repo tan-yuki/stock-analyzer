@@ -91,7 +91,7 @@ const App: React.FC = () => {
             {stockData && !loading && (
               <>
                 {stockData.isUsingMockData && (
-                  <div style={styles.mockDataNotice}>
+                  <div style={styles.mockDataNotice} data-testid="mock-data-notice">
                     ℹ️ デモ用データを表示しています。実際のAPIキーを設定すると、リアルタイムデータを取得できます。
                   </div>
                 )}
